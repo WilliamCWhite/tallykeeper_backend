@@ -1,4 +1,4 @@
-package main
+package db
 
 import (
 	"log"
@@ -32,7 +32,7 @@ type Entry struct {
 
 var pool *pgxpool.Pool
 
-func initializeDB() {
+func InitializeDB() {
 	fmt.Println("initializing db")
 	//urlExample := "postgres://username:password@localhost:5432/databaseName"
 	config, err := pgxpool.ParseConfig(os.Getenv("DATABASE_URL"))

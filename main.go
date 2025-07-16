@@ -6,6 +6,9 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/WilliamCWhite/tallykeeper_backend/db"
+	"github.com/WilliamCWhite/tallykeeper_backend/auth"
+
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -15,7 +18,7 @@ func HomeHandler(w http.ResponseWriter, r *http.Request) {
 } 
 
 func AuthHandler(w http.ResponseWriter, r *http.Request) {
-	payload, err := GetGooglePayload(w, r)
+	payload, err := auth.GetGooglePayload(w, r)
 	if (err != nil) {
 		
 		fmt.Printf("error from GetGooglePayload: %v", err)
@@ -28,7 +31,7 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 
 	var userID = "27"
 
-	tokenString, err := GenerateJWT(userID)
+	tokenString, err := auth.GenerateJWT(userID)
 	if err != nil {
 		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
 		return
@@ -46,41 +49,11 @@ func tokentestHandler(w http.ResponseWriter, r *http.Request) {
 	userID := r.Context().Value("userID").(string)
 	fmt.Println(userID)
 
-	lists, err := GetListsByUserID(r.Context(), 2)
+	lists, err := db.GetListsByUserID(r.Context(), 2)
 	if err != nil {
 		fmt.Printf("error getting lists: %v\n", err)
 	}
 	fmt.Println(lists)
-
-
-	// LIST CREATE WORKS
-	// var list1 List
-	// list1.Title = "Database Created list"
-	// list1.UserID = 2
-	// new_id, err := CreateList(r.Context(), list1)
-	// if err != nil {
-	// 	fmt.Printf("error creating list: %v", err)
-	// } else {
-	// 	fmt.Println(new_id)
-	// }
-
-
-	// LIST UPDATE WORKS
-	// list1 := List {
-	// 	ListID: 6,
-	// 	Title: "Database Updated List",
-	// 	UserID: 2,
-	// }
-	// err = UpdateList(r.Context(), list1)
-	// if err != nil {
-	// 	fmt.Printf("error updating list: %v", err)
-	// }
-
-	// LIST DELETE WORKS
-	// err = DeleteList(r.Context(), 6, 2)
-	// if err != nil {
-	// 	fmt.Printf("error deleting list: %v", err)
-	// }
 
 	json.NewEncoder(w).Encode(lists)
 }
@@ -92,7 +65,7 @@ func main() {
 	}
 
 	r := mux.NewRouter()
-	r.Use(CORSResolver)
+	r.Use(auth.CORSResolver)
 	r.Host("localhost:5173")
 
 	// Routes
@@ -101,11 +74,12 @@ func main() {
 
 	// Protected Router requiring authorization key
 	pr := r.PathPrefix("/api").Subrouter() // all these routes start with api
-	pr.Use(JWTVerifier)
+	pr.Use(auth.JWTVerifier)
 
 	pr.HandleFunc("/tokentest", tokentestHandler)
 
-	initializeDB()
+	db.InitializeDB()
+	
 
 	log.Fatal(http.ListenAndServe(":7070", r))
 }
