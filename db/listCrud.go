@@ -40,12 +40,12 @@ func GetListsByUserID(ctx context.Context, userID int) ([]List, error) {
 	return lists, nil
 }
 
-func CreateList(ctx context.Context, list List) (string, error) {
+func CreateList(ctx context.Context, list List) (int, error) {
 	query := `INSERT INTO lists (title, time_created, time_modified, user_id)
 		VALUES ($1, $2, $3, $4)
 		RETURNING list_id`
 	
-	var newListID string
+	var newListID int
 	err := pool.QueryRow(ctx, query,
 		list.Title,
 		time.Now(),
@@ -54,7 +54,7 @@ func CreateList(ctx context.Context, list List) (string, error) {
 	).Scan(&newListID)
 
 	if err != nil {
-		return "", fmt.Errorf("failed to create list with pgx: %w", err)
+		return -1, fmt.Errorf("failed to create list with pgx: %w", err)
 	}
 
 	return newListID, nil

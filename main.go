@@ -55,6 +55,14 @@ func tokentestHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	fmt.Println(lists)
 
+	testEmail := "test_user_3"
+	newId, err := db.CreateUserFromEmail(r.Context(), testEmail)
+	if err != nil {
+		fmt.Printf("error creating user: %v", err)
+	}
+
+	fmt.Println(newId)
+
 	json.NewEncoder(w).Encode(lists)
 }
 
