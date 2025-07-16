@@ -42,13 +42,47 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func tokentestHandler(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/plain")
+	w.Header().Set("Content-Type", "application/json")
 	userID := r.Context().Value("userID").(string)
 	fmt.Println(userID)
 
-	json.NewEncoder(w).Encode(map[string]string{
-		"data_from_backend": "good job",
-	})
+	lists, err := GetListsByUserID(r.Context(), 2)
+	if err != nil {
+		fmt.Printf("error getting lists: %v\n", err)
+	}
+	fmt.Println(lists)
+
+
+	// LIST CREATE WORKS
+	// var list1 List
+	// list1.Title = "Database Created list"
+	// list1.UserID = 2
+	// new_id, err := CreateList(r.Context(), list1)
+	// if err != nil {
+	// 	fmt.Printf("error creating list: %v", err)
+	// } else {
+	// 	fmt.Println(new_id)
+	// }
+
+
+	// LIST UPDATE WORKS
+	// list1 := List {
+	// 	ListID: 6,
+	// 	Title: "Database Updated List",
+	// 	UserID: 2,
+	// }
+	// err = UpdateList(r.Context(), list1)
+	// if err != nil {
+	// 	fmt.Printf("error updating list: %v", err)
+	// }
+
+	// LIST DELETE WORKS
+	// err = DeleteList(r.Context(), 6, 2)
+	// if err != nil {
+	// 	fmt.Printf("error deleting list: %v", err)
+	// }
+
+	json.NewEncoder(w).Encode(lists)
 }
 
 func main() {
@@ -70,6 +104,8 @@ func main() {
 	pr.Use(JWTVerifier)
 
 	pr.HandleFunc("/tokentest", tokentestHandler)
+
+	initializeDB()
 
 	log.Fatal(http.ListenAndServe(":7070", r))
 }

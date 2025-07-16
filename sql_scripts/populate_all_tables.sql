@@ -1,7 +1,7 @@
-INSERT INTO users(username, user_key)
+INSERT INTO users(email)
 VALUES
-  ('test_user_1', 'key_1'),
-  ('test_user_2', 'key_2');
+  ('test_user_1'),
+  ('test_user_2');
 
 INSERT INTO lists(title, user_id)
 VALUES
