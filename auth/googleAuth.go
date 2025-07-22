@@ -9,6 +9,8 @@ import (
 
 	"google.golang.org/api/idtoken"
 )
+
+// Uses the id_token from a google auth http request to retrieve an information payload from google
 func GetGooglePayload(w http.ResponseWriter, r *http.Request) (*idtoken.Payload, error) {
 	
 	var req struct {
@@ -22,7 +24,6 @@ func GetGooglePayload(w http.ResponseWriter, r *http.Request) (*idtoken.Payload,
 		return nil, fmt.Errorf("Error! %w", err)
 	}
 
-	// replace with your client ID
 	payload, err := idtoken.Validate(context.Background(), req.IDToken, os.Getenv("GOOGLE_CLIENT_ID"))
 	if err != nil {
 		http.Error(w, "Invalid ID token", http.StatusUnauthorized)

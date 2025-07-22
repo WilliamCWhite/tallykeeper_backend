@@ -7,6 +7,7 @@ import (
 	"context"
 )
 
+// when used by a mux router, applies CORS policy to resolve CORS issues
 func CORSResolver(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Set CORS headers
@@ -25,6 +26,7 @@ func CORSResolver(next http.Handler) http.Handler {
 	}) 
 }
 
+// when used by a mux router, ensures that the request contains a valid JWT and stores the userID in r.Context 
 func JWTVerifier(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		authHeader := r.Header.Get("Authorization")

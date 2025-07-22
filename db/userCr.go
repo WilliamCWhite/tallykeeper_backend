@@ -5,6 +5,7 @@ import (
 	"context"
 )
 
+// from context and an email, retrieves the user_id from the database
 func GetUserIDByEmail(ctx context.Context, email string) (int, error) {
 	query := `SELECT user_id
 		FROM users WHERE email = $1`
@@ -18,6 +19,7 @@ func GetUserIDByEmail(ctx context.Context, email string) (int, error) {
 	return foundUserID, nil
 }
 
+// from context and an email, creates a new user in the database, returning its new user_id
 func CreateUserFromEmail(ctx context.Context, email string) (int, error) {
 	id, err := GetUserIDByEmail(ctx, email)
 	if err == nil {

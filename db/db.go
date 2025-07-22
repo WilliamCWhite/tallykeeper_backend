@@ -10,11 +10,13 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
+// database type for users
 type User struct {
 	UserID int `json:"user_id"`
-	Email int `json:"email"`
+	Email string `json:"email"`
 }
 
+// database type for lists
 type List struct {
 	ListID int `json:"list_id"`
 	Title string `json:"title"`
@@ -23,6 +25,7 @@ type List struct {
 	UserID int `json:"user_id"`
 }
 
+// database type for entries
 type Entry struct {
 	EntryID int `json:"entry_id"`
 	Name string `json:"name"`
@@ -34,6 +37,7 @@ type Entry struct {
 
 var pool *pgxpool.Pool
 
+// initializes the database connection
 func InitializeDB() {
 	fmt.Println("initializing db")
 	//urlExample := "postgres://username:password@localhost:5432/databaseName"

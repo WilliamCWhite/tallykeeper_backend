@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// From context and a listID, returns an array of entries from that list
 func GetEntriesByListID(ctx context.Context, listID int) ([]Entry, error) {
 	query := `SELECT entry_id, name, score, time_created, time_modified
 		FROM entries WHERE list_id = $1
@@ -41,6 +42,7 @@ func GetEntriesByListID(ctx context.Context, listID int) ([]Entry, error) {
 	return entries, nil
 }
 
+// from context and an entry containing name, score, and a list id, adds that entry to the database, returning its entry_id
 func CreateEntry(ctx context.Context, entry Entry) (int, error) {
 	query := `INSERT INTO entries (name, score, time_created, time_modified, list_id)
 		VALUES ($1, $2, $3, $4, $5)
@@ -62,6 +64,7 @@ func CreateEntry(ctx context.Context, entry Entry) (int, error) {
 	return newEntryID, nil
 }
 
+// from context and an entry containing name, score, entry_id, and list_id, updates the entry in the database
 func UpdateEntry(ctx context.Context, entry Entry) (error) {
 	query := `UPDATE entries SET name = $1, score = $2, time_modified = $3
 		WHERE entry_id = $4 AND list_id = $5`
@@ -84,6 +87,7 @@ func UpdateEntry(ctx context.Context, entry Entry) (error) {
 	return nil
 }
 
+// from context, an entry id, and a list id, deletes an entry in the database
 func DeleteEntry(ctx context.Context, entryID int, listID int) error {
 	query := `DELETE FROM entries WHERE entry_id = $1 AND list_id = $2`
 

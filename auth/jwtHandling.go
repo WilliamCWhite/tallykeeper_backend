@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// Claims I want in my jwt
+// contains all claims to put in a jwt
 type TallyJwtClaims struct {
 	UserID               string `json:"user_id"`
 	jwt.RegisteredClaims        // Embed standard claims in struct
@@ -17,6 +17,7 @@ type TallyJwtClaims struct {
 
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
+// generates a JWT token string from a database userID
 func GenerateJWT(userID string) (string, error) {
 	claims := TallyJwtClaims{
 		UserID: userID,
@@ -42,6 +43,7 @@ func GenerateJWT(userID string) (string, error) {
 	return tokenString, nil
 }
 
+// verifies that a JWT string is from this issuer and returns the decoded claims
 func VerifyJWT(tokenString string) (*TallyJwtClaims, error) {
 	claims := &TallyJwtClaims{}
 

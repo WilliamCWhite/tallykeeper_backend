@@ -6,6 +6,7 @@ import (
 	"time"
 )
 
+// from context and a userId, returns an array of all the users lists
 func GetListsByUserID(ctx context.Context, userID int) ([]List, error) {
 	query := `SELECT list_id, title, time_created, time_modified
 		FROM lists WHERE user_id = $1
@@ -40,6 +41,7 @@ func GetListsByUserID(ctx context.Context, userID int) ([]List, error) {
 	return lists, nil
 }
 
+// from context and a list containing a title and userId, creates a list in the database, returning its list_id
 func CreateList(ctx context.Context, list List) (int, error) {
 	query := `INSERT INTO lists (title, time_created, time_modified, user_id)
 		VALUES ($1, $2, $3, $4)
@@ -60,6 +62,7 @@ func CreateList(ctx context.Context, list List) (int, error) {
 	return newListID, nil
 }
 
+// from context and a list containing a title, list_id, and user_id, updates that list in the database
 func UpdateList(ctx context.Context, list List) (error) {
 	query := `UPDATE lists SET title = $1, time_modified = $2
 		WHERE list_id = $3 AND user_id = $4`
@@ -81,6 +84,7 @@ func UpdateList(ctx context.Context, list List) (error) {
 	return nil
 }
 
+// from context, a list id, and a user id, deletes that list in the database
 func DeleteList(ctx context.Context, listID int, userID int) error {
 	query := `DELETE FROM lists WHERE list_id = $1 AND user_id = $2`
 
