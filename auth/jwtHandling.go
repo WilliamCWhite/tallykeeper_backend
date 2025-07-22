@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 	"errors"
+	"strconv"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -18,15 +19,17 @@ type TallyJwtClaims struct {
 var jwtSecret = []byte(os.Getenv("JWT_SECRET"))
 
 // generates a JWT token string from a database userID
-func GenerateJWT(userID string) (string, error) {
+func GenerateJWT(userID int) (string, error) {
+	stringUserID := strconv.Itoa(userID)
+	
 	claims := TallyJwtClaims{
-		UserID: userID,
+		UserID: stringUserID,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)), // HOW LONG TOKEN LASTS
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "tallykeeper_backend",
-			Subject:   userID,
+			Subject:   stringUserID,
 			Audience:  []string{"tallykeeper_frontend"},
 		},
 	}

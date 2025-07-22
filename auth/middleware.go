@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"net/http"
-	"strings"
-	"fmt"
 	"context"
+	"fmt"
+	"net/http"
+	"strconv"
+	"strings"
 )
 
 // when used by a mux router, applies CORS policy to resolve CORS issues
@@ -48,8 +49,13 @@ func JWTVerifier(next http.Handler) http.Handler {
 			return
 		}
 
+		intUserID, err := strconv.Atoi(claims.UserID)
+		if err != nil {
+			fmt.Printf("Error converting userId string to int: %v", err)
+			http.Error(w, "Internal server error", http.StatusInternalServerError)
+		}
 		// serves to next handler with context
-		ctx := context.WithValue(r.Context(), "userID", claims.UserID)
+		ctx := context.WithValue(r.Context(), "userID", intUserID)
 		next.ServeHTTP(w, r.WithContext(ctx))
 		// context can be read in next handler layer
 		// as r.Context().Value("userID").(string)
