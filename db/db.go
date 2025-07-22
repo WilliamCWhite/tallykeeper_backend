@@ -27,6 +27,8 @@ type Entry struct {
 	EntryID int `json:"entry_id"`
 	Name string `json:"name"`
 	Score int `json:"score"`
+	TimeCreated time.Time `json:"time_created"`
+	TimeModified time.Time `json:"time_modified"`
 	ListID int `json:"list_id"`
 }
 

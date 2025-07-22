@@ -54,14 +54,39 @@ func tokentestHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Printf("error getting lists: %v\n", err)
 	}
 	fmt.Println(lists)
-
-	testEmail := "test_user_3"
-	newId, err := db.CreateUserFromEmail(r.Context(), testEmail)
+	
+	// entries, err := db.GetEntriesByListID(r.Context(), 4)
+	// if err != nil {
+	// 	fmt.Printf("error getting entries: %v\n", err)
+	// }
+	// fmt.Println(entries)
+	
+	entry1 := db.Entry {
+		Name: "database_entry",
+		Score: 100,
+		ListID: 5,
+	}
+	newID, err := db.CreateEntry(r.Context(), entry1)
 	if err != nil {
-		fmt.Printf("error creating user: %v", err)
+		fmt.Printf("error creating enttry: %v", err)
+	}
+	fmt.Println(newID)
+
+	entry2 := db.Entry {
+		Name: "updated_database_entry",
+		Score: 200,
+		ListID: 5,
+		EntryID: 10,
+	}
+	err = db.UpdateEntry(r.Context(), entry2)
+	if err != nil {
+		fmt.Printf("error updating entry: %v", err)
 	}
 
-	fmt.Println(newId)
+	err = db.DeleteEntry(r.Context(), 11, 5)
+
+
+
 
 	json.NewEncoder(w).Encode(lists)
 }

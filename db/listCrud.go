@@ -13,7 +13,7 @@ func GetListsByUserID(ctx context.Context, userID int) ([]List, error) {
 
 	rows, err := pool.Query(ctx, query, userID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to query notes from PostgreSQL with pgx: %w", err)
+		return nil, fmt.Errorf("failed to query lists from PostgreSQL with pgx: %w", err)
 	}
 
 	defer rows.Close()
@@ -28,7 +28,7 @@ func GetListsByUserID(ctx context.Context, userID int) ([]List, error) {
 			&list.TimeModified,
 		)
 		if err != nil {
-			return nil, fmt.Errorf("failed to scan note row with pgx: %w", err)
+			return nil, fmt.Errorf("failed to scan list row with pgx: %w", err)
 		}
 		lists = append(lists, list)
 	}
@@ -71,7 +71,7 @@ func UpdateList(ctx context.Context, list List) (error) {
 		list.UserID,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to update note with pgx: %w", err)
+		return fmt.Errorf("failed to update list with pgx: %w", err)
 	}
 
 	if commandTag.RowsAffected() == 0 {
