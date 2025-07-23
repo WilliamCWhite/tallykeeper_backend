@@ -60,23 +60,23 @@ func VerifyJWT(tokenString string) (*TallyJwtClaims, error) {
 		return jwtSecret, nil
 	})
 
-	if !token.Valid {
-		if err != nil {
-			if errors.Is(err, jwt.ErrTokenMalformed) {
-				return nil, fmt.Errorf("token is malformed")
-			} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
-				return nil, fmt.Errorf("token signature is invalid")
-			} else if errors.Is(err, jwt.ErrTokenExpired) {
-				return nil, fmt.Errorf("token is expired")
-			} else if errors.Is(err, jwt.ErrTokenNotValidYet) {
-				return nil, fmt.Errorf("token is not active yet")
-			} else if errors.Is(err, jwt.ErrTokenUnverifiable) {
-				return nil, fmt.Errorf("token could not be verified due to parsing issues")
-			} else {
-				return nil, fmt.Errorf("couldn't handle this token: %w", err)
-			}
+	if err != nil {
+		if errors.Is(err, jwt.ErrTokenMalformed) {
+			return nil, fmt.Errorf("token is malformed")
+		} else if errors.Is(err, jwt.ErrTokenSignatureInvalid) {
+			return nil, fmt.Errorf("token signature is invalid")
+		} else if errors.Is(err, jwt.ErrTokenExpired) {
+			return nil, fmt.Errorf("token is expired")
+		} else if errors.Is(err, jwt.ErrTokenNotValidYet) {
+			return nil, fmt.Errorf("token is not active yet")
+		} else if errors.Is(err, jwt.ErrTokenUnverifiable) {
+			return nil, fmt.Errorf("token could not be verified due to parsing issues")
+		} else {
+			return nil, fmt.Errorf("couldn't handle this token: %w", err)
 		}
-		
+	}
+
+	if !token.Valid {
 		return nil, fmt.Errorf("invalid token")
 	}
 
