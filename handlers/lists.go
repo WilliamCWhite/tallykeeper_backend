@@ -24,6 +24,10 @@ func ListsHandler(w http.ResponseWriter, r *http.Request) {
 			err = ListGet(w, r, userID)
 		case http.MethodPost:
 			err = ListPost(w, r, userID)
+		case http.MethodDelete:
+			err = ListDelete(w, r, userID)
+		case http.MethodPut:
+			err = ListPut(w, r, userID)
 	}
 
 	if err != nil {
@@ -63,17 +67,15 @@ func ListPost(w http.ResponseWriter, r *http.Request, userID int) error {
 
 	list.UserID = userID
 	
-	listID, err := db.CreateList(r.Context(), list)
+	newList, err := db.CreateList(r.Context(), list)
 	if err != nil {
 		fmt.Printf("error creating list in db: %v", err)
 		http.Error(w, "Internal datbase request error", http.StatusInternalServerError)
 		return err
 	}
 
-	list.ListID = listID
-
 	w.Header().Set("Content-Type", "application/json")
-	err = json.NewEncoder(w).Encode(list)
+	err = json.NewEncoder(w).Encode(newList)
 	if err != nil {
 		fmt.Printf("Error encoding from ListPost: %v", err)
 		http.Error(w, "Internal datbase request error", http.StatusInternalServerError)

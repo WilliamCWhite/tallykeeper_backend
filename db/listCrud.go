@@ -1,8 +1,8 @@
 package db
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -41,31 +41,41 @@ func GetListsByUserID(ctx context.Context, userID int) ([]List, error) {
 	return lists, nil
 }
 
-// from context and a list containing a title and userId, creates a list in the database, returning its list_id
-func CreateList(ctx context.Context, list List) (int, error) {
+// from context and a list containing a title and userId, creates a list in the database, returning the new list
+func CreateList(ctx context.Context, list List) (*List, error) {
 	query := `INSERT INTO lists (title, time_created, time_modified, user_id)
 		VALUES ($1, $2, $3, $4)
-		RETURNING list_id`
-	
+		RETURNING list_id, time_created, time_modified`
+
 	var newListID int
+	var newTimeCreated time.Time // the database and backend time modify differ, so must receive the database version
+	var newTimeModified time.Time
 	err := pool.QueryRow(ctx, query,
 		list.Title,
 		time.Now(),
 		time.Now(),
 		list.UserID,
-	).Scan(&newListID)
+	).Scan(&newListID, &newTimeCreated, &newTimeModified)
 
-	if err != nil {
-		return -1, fmt.Errorf("failed to create list with pgx: %w", err)
+	newList := List {
+		Title: list.Title,
+		ListID: newListID,
+		TimeCreated: newTimeCreated,
+		TimeModified: newTimeModified,
 	}
 
-	return newListID, nil
+	if err != nil {
+		return nil, fmt.Errorf("failed to create list with pgx: %w", err)
+	}
+
+	return &newList, nil
 }
 
 // from context and a list containing a title, list_id, and user_id, updates that list in the database
 func UpdateList(ctx context.Context, list List) (error) {
 	query := `UPDATE lists SET title = $1, time_modified = $2
-		WHERE list_id = $3 AND user_id = $4`
+		WHERE list_id = $3 AND user_id = $4
+		RETURNING time_modified`
 
 	commandTag, err := pool.Exec(ctx, query,
 		list.Title,
