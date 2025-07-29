@@ -131,3 +131,24 @@ func VerifyUserListOwnership(ctx context.Context, userID int, listID int) (bool,
 
 	return true, nil
 }
+
+
+func UpdateListTimeModified(ctx context.Context, listID int, userID int) (error) {
+	query := `UPDATE lists SET time_modified = $1
+		WHERE list_id = $2 AND user_id = $3`
+
+	commandTag, err := pool.Exec(ctx, query, 
+		time.Now(),
+		listID,
+		userID,
+	)
+	if err != nil {
+		return fmt.Errorf("failed to update list time modified with pgx: %w", err)
+	}
+
+	if commandTag.RowsAffected() == 0 {
+		return fmt.Errorf("no list found with ID %d for user %d using pgx", listID, userID)
+	}
+
+	return nil
+}

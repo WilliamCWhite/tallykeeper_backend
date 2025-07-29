@@ -36,20 +36,30 @@ func EntriesHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var err2 error
 	switch r.Method {
 		case http.MethodGet:
 			err = EntriesGet(w, r, listID)
 		case http.MethodPost:
 			err = EntriesPost(w, r, listID)
+			err2 = db.UpdateListTimeModified(r.Context(), listID, userID)
 		case http.MethodDelete:
 			err = EntriesDelete(w, r, listID)
+			err2 = db.UpdateListTimeModified(r.Context(), listID, userID)
 		case http.MethodPut:
 			err = EntriesPut(w, r, listID)
+			err2 = db.UpdateListTimeModified(r.Context(), listID, userID)
 	}
 
 	if err != nil {
 		fmt.Printf("Error handling method for entries: %v", err)
 		http.Error(w, "Failed handling method", http.StatusInternalServerError)
+		return
+	}
+
+	if err2 != nil {
+		fmt.Printf("Error updating list time modified: %v", err)
+		http.Error(w, "failed updating list time_modified", http.StatusInternalServerError)
 		return
 	}
 }
