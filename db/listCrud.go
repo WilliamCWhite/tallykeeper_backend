@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"time"
+
+	"github.com/jackc/pgx/v5"
 )
 
 // from context and a userId, returns an array of all the users lists
@@ -112,4 +114,20 @@ func DeleteList(ctx context.Context, listID int, userID int) error {
 	}
 
 	return nil
+}
+
+func VerifyUserListOwnership(ctx context.Context, userID int, listID int) (bool, error) {
+	query := `SELECT 1 FROM lists WHERE user_id = $1 AND list_id = $2`
+
+	var exists int
+	err := pool.QueryRow(ctx, query, userID, listID).Scan(&exists)
+	if err == pgx.ErrNoRows {
+		return false, fmt.Errorf("list does not belong to user: %w", err)
+	}
+
+	if exists <= 0 {
+		return false, fmt.Errorf("Unknown error")
+	}
+
+	return true, nil
 }

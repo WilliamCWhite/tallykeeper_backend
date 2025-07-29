@@ -7,7 +7,7 @@ import (
 )
 
 // From context and a listID, returns an array of entries from that list
-func GetEntriesByListID(ctx context.Context, listID int) ([]Entry, error) {
+func GetEntries(ctx context.Context, listID int) ([]Entry, error) {
 	query := `SELECT entry_id, name, score, time_created, time_modified
 		FROM entries WHERE list_id = $1
 		ORDER BY time_created`
@@ -43,25 +43,35 @@ func GetEntriesByListID(ctx context.Context, listID int) ([]Entry, error) {
 }
 
 // from context and an entry containing name, score, and a list id, adds that entry to the database, returning its entry_id
-func CreateEntry(ctx context.Context, entry Entry) (int, error) {
+func CreateEntry(ctx context.Context, entry Entry) (*Entry, error) {
 	query := `INSERT INTO entries (name, score, time_created, time_modified, list_id)
 		VALUES ($1, $2, $3, $4, $5)
-		RETURNING entry_id`
+		RETURNING entry_id, time_created, time_modified`
 
 	var newEntryID int
+	var newTimeCreated time.Time // the database and backend time modify differ, so must receive the database version
+	var newTimeModified time.Time
 	err := pool.QueryRow(ctx, query,
 		entry.Name,
 		entry.Score,
 		time.Now(),
 		time.Now(),
 		entry.ListID,
-	).Scan(&newEntryID)
+	).Scan(&newEntryID, &newTimeCreated, &newTimeModified)
 
-	if err != nil {
-		return -1, fmt.Errorf("failed to create entry with pgx: %w", err)
+	newEntry := Entry {
+		Name: entry.Name,
+		Score: entry.Score,
+		EntryID: newEntryID,
+		TimeCreated: newTimeCreated,
+		TimeModified: newTimeModified,
 	}
 
-	return newEntryID, nil
+	if err != nil {
+		return nil, fmt.Errorf("failed to create entry with pgx: %w", err)
+	}
+
+	return &newEntry, nil
 }
 
 // from context and an entry containing name, score, entry_id, and list_id, updates the entry in the database

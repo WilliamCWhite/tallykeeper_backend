@@ -31,8 +31,8 @@ func ListsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err != nil {
-		fmt.Printf("Error encoding JSON: %v", err)
-		http.Error(w, "Failed encoding JSON", http.StatusInternalServerError)
+		fmt.Printf("Error handlng method: %v", err)
+		http.Error(w, "Failed handling method", http.StatusInternalServerError)
 		return
 	}
 }

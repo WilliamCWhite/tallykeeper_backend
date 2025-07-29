@@ -58,6 +58,7 @@ func main() {
 
 	pr.HandleFunc("/tokentest", tokentestHandler)
 	pr.HandleFunc("/lists", handlers.ListsHandler)
+	pr.HandleFunc("/entries/{listID}", handlers.EntriesHandler)
 
 	db.InitializeDB()
 	
