@@ -11,14 +11,14 @@ import (
 
 // This endpoint uses google sign in to either log in as a user or create a new user then log in as them, providing a JWT token in the response
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
-	payload, err := auth.GetGooglePayload(w, r)
+	userInfo, err := auth.GetGoogleUserInfo(w, r)
 	if err != nil {
-		fmt.Printf("error from GetGooglePayload: %v", err)
+		fmt.Printf("error from GetGoogleUserInfo: %v", err)
 		http.Error(w, "Failed to communicate with Google login service", http.StatusInternalServerError)
 		return
 	}
 
-	email := payload.Claims["email"].(string)
+	email := userInfo.Email
 
 	userID, err := db.GetUserIDByEmail(r.Context(), email)
 	if err != nil {
