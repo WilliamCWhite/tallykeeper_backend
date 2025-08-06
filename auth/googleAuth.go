@@ -22,7 +22,6 @@ func GetGoogleUserInfo(w http.ResponseWriter, r *http.Request) (*GoogleUserInfo,
 		AccessToken string `json:"access_token"`
 	}
 	err := json.NewDecoder(r.Body).Decode(&req)
-	fmt.Println(req.AccessToken)
 	if err != nil || req.AccessToken == "" {
 		http.Error(w, "Invalid request", http.StatusBadRequest)
 		fmt.Println("Error at json decoding stage")
@@ -32,7 +31,7 @@ func GetGoogleUserInfo(w http.ResponseWriter, r *http.Request) (*GoogleUserInfo,
 	userInfoResp, err := http.Get("https://www.googleapis.com/oauth2/v3/userinfo?access_token=" + req.AccessToken)
 	if err != nil || userInfoResp.StatusCode != http.StatusOK {
 		http.Error(w, "Failed to validate access token", http.StatusUnauthorized)
-		fmt.Printf("Failed to fetch userinfo. Status: %d, Error: %v\n", userInfoResp.StatusCode, err)
+		fmt.Printf("Failed to fetch userinfo. Error: %v\n", err)
 		return nil, fmt.Errorf("failed to fetch userinfo: %w", err)
 	}
 	defer userInfoResp.Body.Close()

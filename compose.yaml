@@ -1,0 +1,14 @@
+services:
+  backend:
+    build: .
+    ports:
+      - "7070:7070"
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+    - staticnetwork
+
+networks:
+  staticnetwork:
+    external: true

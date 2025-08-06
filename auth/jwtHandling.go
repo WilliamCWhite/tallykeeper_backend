@@ -25,7 +25,7 @@ func GenerateJWT(userID int) (string, error) {
 	claims := TallyJwtClaims{
 		UserID: stringUserID,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(600 * time.Minute)), // HOW LONG TOKEN LASTS
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(15 * time.Minute)), // HOW LONG TOKEN LASTS
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 			Issuer:    "tallykeeper_backend",
