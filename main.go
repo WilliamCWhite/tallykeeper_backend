@@ -21,7 +21,6 @@ func main() {
 
 	r := mux.NewRouter()
 	r.Use(auth.CORSResolver)
-	r.Host("localhost:5173")
 
 	// Routes
 	r.HandleFunc("/api/auth/google", handlers.LoginHandler)
