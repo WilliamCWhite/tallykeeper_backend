@@ -12,6 +12,10 @@ import (
 	// "github.com/joho/godotenv"
 )
 
+func TestHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Backend is working"))
+}
+
 func main() {
 	// Only necessary if not using dockerl
 	// err := godotenv.Load()
@@ -22,6 +26,7 @@ func main() {
 	r := mux.NewRouter()
 	r.Use(auth.CORSResolver)
 
+	r.HandleFunc("/api/test", TestHandler)
 	// Routes
 	r.HandleFunc("/api/auth/google", handlers.LoginHandler)
 
